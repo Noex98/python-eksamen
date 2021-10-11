@@ -6,12 +6,60 @@ from klasser import *
 # og husk at give dem alle et forskelligt ID - som skal bruges til
 # at udlåne det.
 listMaterialer = [
-    Bog(1, 'Python crash course', 10, 234, 2012, 421, 'Mette F'),
-    Bog(2, 'Webdesign for beginners', 7, 168, 2016, 365, 'Jørgen'),
-    Bog(3, 'Da Vinci Mysteriet', 11, 142, 2009, 610, 'Dan brun'),
-    Film(4,'Titanic', 15, 321, 1970, 'Alfred Hitchcock'),
-    Film(5, 'The Avengers', 23, 149, 2001, 'Brad Pitt'),
-    Film(6, 'Pirates of the Caribbean', 19, 130, 1999, ''),
+    Bog(
+        idnr = 1, 
+        titel = 'Python crash course', 
+        antal = 10, 
+        antaludlaan = 234, 
+        aarstal = 2012, 
+        antalsider = 421, 
+        forfatter = 'MetteF'
+    ),
+    Bog(
+        idnr = 2, 
+        titel = 'Webdesign for beginners', 
+        antal = 7, 
+        antaludlaan = 168, 
+        aarstal = 2016, 
+        antalsider = 365, 
+        forfatter = 'Jørgen'
+    ),
+    Bog(
+        idnr = 3, 
+        titel = 'Da Vinci Mysteriet', 
+        antal = 11, 
+        antaludlaan = 142, 
+        aarstal = 2009, 
+        antalsider = 610, 
+        forfatter = 'Dan brun'
+    ), 
+    Film(
+        idnr = 4,
+        titel = 'Titanic',
+        antal = 42,
+        antaludlaan = 9,
+        aarstal = 1999,
+        instruktor = 'Torsten',
+        laengde = 90
+    ),
+    Film(
+        idnr = 5,
+        titel = 'Titanic 2',
+        antal = 42,
+        antaludlaan = 9,
+        aarstal = 2000,
+        instruktor = 'Torsten',
+        laengde = 120
+    ),
+    Film(
+        idnr = 6,
+        titel = 'Titanic 3',
+        antal = 42,
+        antaludlaan = 9,
+        aarstal = 2001,
+        instruktor = 'Torsten',
+        laengde = 100
+    ),
 ]
 
 
@@ -22,12 +70,29 @@ class Application(Frame):
         print("id der skal lånes: " + idnr)
         # TODO - her skal du have udlånt det korrekte materiale.
         # med det korrekte id og opdater objektet.
+        try:
+            idnr = int(idnr)
+            for materiale in listMaterialer:
+                if idnr == materiale.idnr:
+                    materiale.antaludlaan -= 1
+                    break
+        except:
+            print('Indtast venligst et tal')
+        
 
     def aflever(self):
         idnr = self.aflever_entry.get()
         print("id der skal afleveres: " + idnr)
         # TODO - her skal du have afleveret det korrekte materiale
         # med det korrekte id og så opdater det objekt.
+        try:
+            idnr = int(idnr)
+            for materiale in listMaterialer:
+                if idnr == materiale.idnr:
+                    materiale.antaludlaan += 1
+                    break
+        except:
+            print('Indtast venligst et tal')
 
     def sog_i_listen(self):
         search_text = self.entry.get()
