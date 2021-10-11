@@ -2,7 +2,7 @@ class Materiale(object):
     def __init__(self, idnr, titel, antal, antaludlaan, aarstal):
         self.idnr = idnr
         self.titel = titel
-        self.anal = antal
+        self.antal = antal
         self.antaludlaan = antaludlaan
         self.aarstal = aarstal
 
@@ -13,7 +13,7 @@ class Bog(Materiale):
         self.forfatter = forfatter
 
     def toString(self):
-        return f'{__class__.__name__}: {self.titel}'
+        return f'{__class__.__name__}: "{self.titel}", ledige eksamplerer: {self.antal - self.antaludlaan}'
 
 class Film(Materiale):
     def __init__(self, idnr, titel, antal, antaludlaan, aarstal, instruktor, laengde):
@@ -22,4 +22,4 @@ class Film(Materiale):
         self.laengde = laengde
 
     def toString(self):
-        return f'{__class__.__name__}: {self.titel}'
+        return f'{__class__.__name__}: "{self.titel}", ledige eksamplerer: {self.antal - self.antaludlaan}'

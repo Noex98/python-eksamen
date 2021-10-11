@@ -1,80 +1,17 @@
 from tkinter import *
-from klasser import *
-
-# TODO - du skal have initialiseret nogle bogobjekter og nogle filmobjekter
-# og sat ind i listen - Lav minimum 3 af hver type -
-# og husk at give dem alle et forskelligt ID - som skal bruges til
-# at udlåne det.
-listMaterialer = [
-    Bog(
-        idnr = 1, 
-        titel = 'Python crash course', 
-        antal = 10, 
-        antaludlaan = 234, 
-        aarstal = 2012, 
-        antalsider = 421, 
-        forfatter = 'MetteF'
-    ),
-    Bog(
-        idnr = 2, 
-        titel = 'Webdesign for beginners', 
-        antal = 7, 
-        antaludlaan = 168, 
-        aarstal = 2016, 
-        antalsider = 365, 
-        forfatter = 'Jørgen'
-    ),
-    Bog(
-        idnr = 3, 
-        titel = 'Da Vinci Mysteriet', 
-        antal = 11, 
-        antaludlaan = 142, 
-        aarstal = 2009, 
-        antalsider = 610, 
-        forfatter = 'Dan brun'
-    ), 
-    Film(
-        idnr = 4,
-        titel = 'Titanic',
-        antal = 42,
-        antaludlaan = 9,
-        aarstal = 1999,
-        instruktor = 'Torsten',
-        laengde = 90
-    ),
-    Film(
-        idnr = 5,
-        titel = 'Titanic 2',
-        antal = 42,
-        antaludlaan = 9,
-        aarstal = 2000,
-        instruktor = 'Torsten',
-        laengde = 120
-    ),
-    Film(
-        idnr = 6,
-        titel = 'Titanic 3',
-        antal = 42,
-        antaludlaan = 9,
-        aarstal = 2001,
-        instruktor = 'Torsten',
-        laengde = 100
-    ),
-]
-
+from materialer import *
 
 class Application(Frame):
 
     def udlaan(self):
         idnr = self.id_entry.get()
         print("id der skal lånes: " + idnr)
-        # TODO - her skal du have udlånt det korrekte materiale.
-        # med det korrekte id og opdater objektet.
         try:
             idnr = int(idnr)
             for materiale in listMaterialer:
                 if idnr == materiale.idnr:
-                    materiale.antaludlaan -= 1
+                    materiale.antaludlaan += 1
+                    self.vis_hele_listen()
                     break
         except:
             print('Indtast venligst et tal')
@@ -83,33 +20,28 @@ class Application(Frame):
     def aflever(self):
         idnr = self.aflever_entry.get()
         print("id der skal afleveres: " + idnr)
-        # TODO - her skal du have afleveret det korrekte materiale
-        # med det korrekte id og så opdater det objekt.
         try:
             idnr = int(idnr)
             for materiale in listMaterialer:
                 if idnr == materiale.idnr:
-                    materiale.antaludlaan += 1
+                    materiale.antaludlaan -= 1
+                    self.vis_hele_listen()
                     break
         except:
             print('Indtast venligst et tal')
 
     def sog_i_listen(self):
-        search_text = self.entry.get()
-        print("søge tekst: "+search_text)
-        # TODO Nu skal listen af materiale søges igennem og
-        # de materialer som matcher (dvs. hvor søgestrengen indgår som
-        # en delstring) skal nu vises i listen og altså IKKE alle
-        # materialer. Så du kan få brug for at slette det som
-        # allerede står i vinduet og så tilføje de materialer
-        # som matcher.
+        search_text = self.entry.get().lower()
+        self.listGui.delete('1.0', END)
+        for materiale in listMaterialer:
+            if search_text in materiale.titel.lower():
+                self.listGui.insert(INSERT, materiale.toString()+"\n")
+            
 
     def vis_hele_listen(self):
-        print("Vis hele listen")
-        # linjen nedenunder sletter hele listen i GUI'en
-        # Den være være nyttig andre steder.....
         self.listGui.delete('1.0', END)
-        # TODO - nu skal du vise HELE listen af materialer igen
+        for materiale in listMaterialer:
+            self.listGui.insert(INSERT, materiale.toString()+"\n")
 
     def create_widgets(self):
         frame = Frame(self)
