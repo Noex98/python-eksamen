@@ -1,34 +1,83 @@
 from tkinter import *
 from materialer import *
+import tkinter.messagebox
+from brugere import Thomas as User
 
 class Application(Frame):
 
     def udlaan(self):
         idnr = self.id_entry.get()
-        print("id der skal lånes: " + idnr)
+
+        # Casting af brugerinput i et try/except for at sikre at en int bliver brugt
         try:
             idnr = int(idnr)
+
+            # Gennemsøg vores data
             for materiale in listMaterialer:
+                # Vi sandt har vi fundet hvad vi ledte efter
                 if idnr == materiale.idnr:
-                    materiale.antaludlaan += 1
-                    self.vis_hele_listen()
-                    break
+                    # Har vi nogen af disse bøger ledige
+                    if materiale.antal - materiale.antaludlaan >= 1:
+                        # Tjek om brugeren allerede har lånt dette materiale
+                        for lån in User['alle_lån']:
+                            if lån['idnr'] == idnr:
+                                tkinter.messagebox.showinfo('Udlån', f'Du har allerede lånt: "{materiale.titel}"\nAflever først, for at kunne genlåne')
+                                break
+
+                        # Brugeren må godt låne materialet
+                        else:
+                            materiale.antaludlaan += 1
+                            
+                            # Registrer at brugeren nu har lånt
+                            User['alle_lån'].append({
+                                'idnr': materiale.idnr,
+                                'dage_lånt': 0
+                            })
+
+                            self.vis_hele_listen()
+
+                            tkinter.messagebox.showinfo('Udlån', f'{materiale.titel}, er nu udlånt. \n\n Senest aflevering om {materiale.låneperiode} dage')
+                        break
+
+                    else:
+                        tkinter.messagebox.showerror('Fejl', f'{materiale.titel}, er ikke på lager i øjeblikket')
+                        break
+            
+            # Hvis ikke indtastede id var i listen
+            else:
+                tkinter.messagebox.showinfo('Udlån', f'Materialet med id "{idnr}" står ikke i vores system')
+
         except:
-            print('Indtast venligst et tal')
+            tkinter.messagebox.showerror('Fejl', 'Skriv venligst et tal')
         
 
     def aflever(self):
         idnr = self.aflever_entry.get()
-        print("id der skal afleveres: " + idnr)
+
+        # Casting af brugerinput i et try/except for at sikre at en int bliver brugt
         try:
             idnr = int(idnr)
+
+            # Gennemsøg vores liste af materialer
             for materiale in listMaterialer:
                 if idnr == materiale.idnr:
                     materiale.antaludlaan -= 1
+
+                    # Gennemsøg brugerens lån, og slet det afleverede materiale
+                    for lån in User['alle_lån']:
+                        if lån['idnr'] == idnr:
+                            User['alle_lån'].remove(lån)
+
                     self.vis_hele_listen()
+                    tkinter.messagebox.showinfo('Aflevering', f'{materiale.titel} er nu afleveret')
                     break
+
+            # Hvis ikke indtastede id var i listen
+            else:
+                tkinter.messagebox.showinfo('Udlån', f'Materialet med id "{idnr}" står ikke i vores system')
+
         except:
-            print('Indtast venligst et tal')
+            tkinter.messagebox.showerror('Fejl', 'Skriv venligst et tal')
 
     def sog_i_listen(self):
         search_text = self.entry.get().lower()
@@ -36,12 +85,37 @@ class Application(Frame):
         for materiale in listMaterialer:
             if search_text in materiale.titel.lower():
                 self.listGui.insert(INSERT, materiale.toString()+"\n")
-            
+    
 
     def vis_hele_listen(self):
         self.listGui.delete('1.0', END)
         for materiale in listMaterialer:
             self.listGui.insert(INSERT, materiale.toString()+"\n")
+        self.entry.delete(0, END)
+
+    def vis_profil(self):
+        self.listGui.delete('1.0', END)
+        self.listGui.insert(INSERT, f'  {User["navn"]}\n\nDine lån: \n\n')
+
+        # Gennemgå alle brugerens lån, og inset elementer i UI
+
+        if len(User['alle_lån']) > 0:
+            for lån in User['alle_lån']:
+                # Find materialet i listen
+                for materiale in listMaterialer:
+                    if lån['idnr'] == materiale.idnr:
+                        fundet_materiale = materiale
+                        self.listGui.insert(INSERT, f"{fundet_materiale.titel}\n    aflevering om: {fundet_materiale.låneperiode - lån['dage_lånt']} dage\n    id: {fundet_materiale.idnr}\n\n")
+                        break
+
+                # Det lånte materiale findes ikke i bibliotekets data
+                else:
+                    tkinter.messagebox.showerror('Fejl', f'Materialet med ID: {lån["idnr"]}, er udgået fra bibliotekets database\n\nHenvend dig i receptionen')
+        else:
+            self.listGui.insert(INSERT, '   Ingen nuværende lån.')
+
+
+            
 
     def create_widgets(self):
         frame = Frame(self)
@@ -57,6 +131,7 @@ class Application(Frame):
         self.visListe = Button(frame,text="Vis hele listen")
         self.visListe["command"] = self.vis_hele_listen
         self.visListe.pack({"side": "left"})
+        
 
         # definition af input søge feltet.
         self.L1 = Label(frame, text="Søge Streng")
@@ -92,15 +167,16 @@ class Application(Frame):
         self.afleverKnap["command"] = self.aflever
         self.afleverKnap.pack({"side": "left"})
 
-        # Her definerer vi en Text widget - dvs
-        # den kan indeholde multiple linjer
-        # ideen er så at hver linje indeholde et styk materiale
-        # Nedenunder kan du se hvordan listen af materiale løbes
-        # igennem og toString metoden bliver kaldt og så bliver
-        # der indsat en ny linje i Text widgeten
-        self.listGui = Text(self, width=140)
+        # defination og mapping a profilknap
+        self.profil = Button(frame, text="Min profil")
+        self.profil['comman'] = self.vis_profil
+        self.profil.pack({"side": "left"})
+
+        # definatino af text widget
+        self.listGui = Text(self, width=140, height=35, font='Times')
         for materiale in listMaterialer:
             self.listGui.insert(INSERT, materiale.toString()+"\n")
+
         frame.pack()
         self.listGui.pack()
 
@@ -110,6 +186,7 @@ class Application(Frame):
         Frame.__init__(self, master)
         self.pack()
         self.create_widgets()
+
 
 
 root = Tk()

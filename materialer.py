@@ -1,5 +1,7 @@
 from klasser import *
 
+#   Oprettelse af vores data
+
 listMaterialer = [
     Bog(
         idnr = 1, 
@@ -8,7 +10,8 @@ listMaterialer = [
         antaludlaan = 198, 
         aarstal = 2012, 
         antalsider = 421, 
-        forfatter = 'MetteF'
+        forfatter = 'Henning',
+        låneperiode = 8
     ),
     Bog(
         idnr = 2, 
@@ -17,7 +20,8 @@ listMaterialer = [
         antaludlaan = 87, 
         aarstal = 2016, 
         antalsider = 365, 
-        forfatter = 'Jørgen'
+        forfatter = 'Jørgen',
+        låneperiode = 6
     ),
     Bog(
         idnr = 3, 
@@ -26,7 +30,8 @@ listMaterialer = [
         antaludlaan = 79, 
         aarstal = 2009, 
         antalsider = 610, 
-        forfatter = 'Dan brun'
+        forfatter = 'Dan brun',
+        låneperiode = 14
     ), 
     Film(
         idnr = 4,
@@ -50,7 +55,7 @@ listMaterialer = [
         idnr = 6,
         titel = 'Titanic 3',
         antal = 42,
-        antaludlaan = 9,
+        antaludlaan = 42,
         aarstal = 2001,
         instruktor = 'Torsten',
         laengde = 100
