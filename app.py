@@ -97,10 +97,11 @@ class Application(Frame):
         self.listGui.delete('1.0', END)
         self.listGui.insert(INSERT, f'  {User["navn"]}\n\nDine lån: \n\n')
 
-        # Gennemgå alle brugerens lån, og inset elementer i UI
-
         if len(User['alle_lån']) > 0:
+
+            # Gennemgå alle brugerens lån, og inset elementer i UI
             for lån in User['alle_lån']:
+
                 # Find materialet i listen
                 for materiale in listMaterialer:
                     if lån['idnr'] == materiale.idnr:
